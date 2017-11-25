@@ -1,7 +1,7 @@
 class Queue {
   constructor() {
-      this.storage = [];
-    }
+    this.storage = [];
+  }
 
   enqueue(x) {
       this.storage.push(x);
@@ -30,56 +30,52 @@ class BinarySearchTree {
   // assigns it to either the left or right subtree,
   // depending on its value
   insert(value) {
-    if (this.value === undefined) {
+    if (!this.value) {
       this.value = value;
-    } else if (this.value >= value) {
-    if (this.left === null) {
-        this.left = new BinarySearchTree;
+      return;
+    }
+    if (this.value > value) {
+      if (!this.left) {
+        this.left = new BinarySearchTree();
         this.left.value = value;
       } else {
         this.left.insert(value);
       }
-  } else {
-    if (this.right === null) {
-        this.right = new BinarySearchTree;
+    } 
+    if (this.value < value) {
+      if (!this.right) {
+        this.right = new BinarySearchTree();
         this.right.value = value;
       } else {
         this.right.insert(value);
       }
-  }
+    }
   }
   // Checks the binary search tree for the input target
   // Can be written recursively or iteratively
   contains(target) {
-     if (this.value === target) {
-      return true;
-    } else if (this.value > target) {
-      if (this.left === null)  return false;
-      return this.left.contains(target);
-    } else {
-      if (this.right === null)  return false;
-      return this.right.contains(target);
+    if (this.value === target) return true;
+    if (this.left && !this.right) return this.left.contains(target);
+    if (this.right && !this.left) return this.right.contains(target);
+    if (this.left && this.right) {
+      return this.left.contains(target) || this.right.contains(target);   
     }
+    return false; 
   }
   // Traverses the tree in a depth-first manner, i.e. from top to bottom
   // Applies the given callback to each tree node in the process. 
   // Below is solution of preorder BST Call (order is root -> left node -> right node)
   depthFirstForEach(cb) {
-    if (!this.value) return;
-    else if (!this.left && !this.right) {
-        cb(this.value);
-      } else if (!this.left) {
-      cb(this.value);
-      this.right.depthFirstForEach(cb);
-    } else if (!this.right) {
-      cb(this.value);
-      this.left.depthFirstForEach(cb);
-    } else {
-      cb(this.value);
+    if (!this.value) return null;
+    this.value = cb(this.value);
+    if (this.left && !this.right) this.left.depthFirstForEach(cb);
+    if (this.right && !this.left) this.right.depthFirstForEach(cb);
+    if (this.right && this.left) {
       this.left.depthFirstForEach(cb);
       this.right.depthFirstForEach(cb);
-    } 
-  }
+    }
+    return this;
+  } 
 
   // Traverses the tree in a breadth-first manner, i.e. in layers, starting 
   // at the root node, going down to the root node's children, and iterating
@@ -89,15 +85,17 @@ class BinarySearchTree {
   // again. Whatever floats your boat.
   
   breadthFirstForEach(cb) {
-    if (!this.value) return;
-    else { 
-      const myQueue = new Queue();
-      myQueue.enqueue(this.value);
-      while (!myQueue.isEmpty()) {
-
-      }
+    if (!this.value) return null;
+    const myQ = new Queue();
+    let current = this;
+    myQ.enqueue(current);
+    while (!myQ.isEmpty()) {
+      current = myQ.dequeue();
+      current.value = cb(current.value);
+      if (current.left) myQ.enqueue(current.left);
+      if (current.right) myQ.enqueue(current.right);
     }
+    return this; 
   }   
 }
-
 module.exports = BinarySearchTree;
